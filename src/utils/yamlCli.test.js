@@ -5,14 +5,14 @@ import { parseYaml, stringifyYaml } from './yaml.js';
 
 const formatterCommand = fileURLToPath(new URL('../../bin/datacontract-editor.js', import.meta.url));
 
-function formatWithCommand(input) {
-  return spawnSync(process.execPath, [formatterCommand, 'format'], {
+function formatWithCommand(input, args = []) {
+  return spawnSync(process.execPath, [formatterCommand, 'format-yaml', ...args], {
     encoding: 'utf8',
     input,
   });
 }
 
-describe('datacontract-editor format', () => {
+describe('datacontract-editor format-yaml', () => {
   const cases = {
     'typed scalars': 'enabled: true\ncount: 42\nratio: 1.5\nempty: null\n',
     'scalar-like string keys': '"true": string key\n"42": another string key\n',
@@ -39,6 +39,22 @@ describe('datacontract-editor format', () => {
 
   it('writes no YAML and returns a static diagnostic for invalid input', () => {
     const result = formatWithCommand('name: [unterminated\n');
+
+    expect(result.status).toBe(1);
+    expect(result.stdout).toBe('');
+    expect(result.stderr).toBe('Error: unable to format YAML\n');
+  });
+
+  it.each([[], ['--help'], ['extra']])('rejects empty input and arguments %j', (args) => {
+    const result = formatWithCommand('', args);
+
+    expect(result.status).toBe(1);
+    expect(result.stdout).toBe('');
+    expect(result.stderr).toBe('Error: unable to format YAML\n');
+  });
+
+  it.each([['--help'], ['extra']])('rejects trailing arguments %j', (args) => {
+    const result = formatWithCommand('name: example\n', args);
 
     expect(result.status).toBe(1);
     expect(result.stdout).toBe('');

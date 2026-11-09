@@ -49,7 +49,7 @@ structured Editor changes. The command writes formatted YAML only to standard ou
 non-zero with a concise diagnostic when it cannot format the input.
 
 ```
-datacontract-editor format < input.yaml > formatted.yaml
+datacontract-editor format-yaml < input.yaml > formatted.yaml
 ```
 
 
