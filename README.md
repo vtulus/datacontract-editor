@@ -42,6 +42,16 @@ npx datacontract-editor mydatacontract.odcs.yaml
 A `customization.yaml` in the working directory (or a file referenced via `--customization` /
 `CUSTOMIZATION_CONFIG`) is applied automatically, see [CUSTOMIZATION.md](CUSTOMIZATION.md).
 
+### YAML formatter
+
+Format one YAML document from standard input with the same parser and serializer used by
+structured Editor changes. The command writes formatted YAML only to standard output and exits
+non-zero with a concise diagnostic when it cannot format the input.
+
+```
+datacontract-editor format < input.yaml > formatted.yaml
+```
+
 
 
 ### Docker
