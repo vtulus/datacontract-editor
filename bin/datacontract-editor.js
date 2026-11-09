@@ -8,24 +8,35 @@ import { createRequire } from 'module';
 import process from 'node:process';
 import { parseYaml, stringifyYaml } from '../src/utils/yaml.js';
 
+async function readFormatInput() {
+  process.stdin.setEncoding('utf-8');
+  let input = '';
+  for await (const chunk of process.stdin) input += chunk;
+  return input;
+}
+
+function writeToStream(stream, value) {
+  return new Promise((resolve, reject) => {
+    stream.write(value, (error) => error ? reject(error) : resolve());
+  });
+}
+
 // This intentionally uses the formatter that structured editor changes use.
 // Keep this before all server setup so `format-yaml` is non-interactive.
 if (process.argv[2] === 'format-yaml') {
   try {
     if (process.argv.length !== 3) throw new Error('Unexpected formatter arguments');
-    const input = readFileSync(0, 'utf-8');
+    const input = await readFormatInput();
     if (input.length === 0) throw new Error('Empty formatter input');
     const output = stringifyYaml(parseYaml(input));
-    await new Promise((resolve, reject) => {
-      process.stdout.write(output, (error) => error ? reject(error) : resolve());
-    });
-    process.exit(0);
+    await writeToStream(process.stdout, output);
   } catch {
-    process.stderr.write('Error: unable to format YAML\n');
-    process.exit(1);
+    process.exitCode = 1;
+    await writeToStream(process.stderr, 'Error: unable to format YAML\n').catch(() => {});
   }
 }
 
+if (process.argv[2] !== 'format-yaml') {
 const __dirname = fileURLToPath(new URL('.', import.meta.url));
 const distDir = join(__dirname, '..', 'dist');
 
@@ -505,3 +516,4 @@ process.on('SIGTERM', () => {
 });
 
 start();
+}

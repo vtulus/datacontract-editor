@@ -47,6 +47,27 @@ describe('datacontract-editor format-yaml', () => {
     expect(result.stdout).toBe(expected);
   });
 
+  it('formats large YAML through Python subprocess capture pipes', () => {
+    const input = `description: "${'a'.repeat(102_787)}"\n`;
+    const expected = stringifyYaml(parseYaml(input));
+    const result = spawnSync('python3', [
+      '-c',
+      `import subprocess, sys
+payload = ('description: "' + 'a' * 102787 + '"\\n').encode()
+result = subprocess.run(sys.argv[1:], input=payload, capture_output=True)
+sys.stdout.buffer.write(result.stdout)
+sys.stderr.buffer.write(result.stderr)
+raise SystemExit(result.returncode)`,
+      process.execPath,
+      formatterCommand,
+      'format-yaml',
+    ], { encoding: 'utf8', maxBuffer: 1024 * 1024 });
+
+    expect(result.status).toBe(0);
+    expect(result.stderr).toBe('');
+    expect(result.stdout).toBe(expected);
+  });
+
   it('writes no YAML and returns a static diagnostic for invalid input', () => {
     const result = formatWithCommand('name: [unterminated\n');
 
