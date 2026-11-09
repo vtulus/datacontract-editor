@@ -15,7 +15,10 @@ if (process.argv[2] === 'format-yaml') {
     if (process.argv.length !== 3) throw new Error('Unexpected formatter arguments');
     const input = readFileSync(0, 'utf-8');
     if (input.length === 0) throw new Error('Empty formatter input');
-    writeFileSync(1, stringifyYaml(parseYaml(input)));
+    const output = stringifyYaml(parseYaml(input));
+    await new Promise((resolve, reject) => {
+      process.stdout.write(output, (error) => error ? reject(error) : resolve());
+    });
     process.exit(0);
   } catch {
     process.stderr.write('Error: unable to format YAML\n');
