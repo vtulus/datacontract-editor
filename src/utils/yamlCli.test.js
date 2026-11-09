@@ -37,6 +37,16 @@ describe('datacontract-editor format-yaml', () => {
     expect(formatWithCommand(result.stdout).stdout).toBe(result.stdout);
   });
 
+  it('writes large formatted output to a captured pipe without truncation', () => {
+    const input = `description: "${'a'.repeat(102_787)}"\n`;
+    const expected = stringifyYaml(parseYaml(input));
+    const result = formatWithCommand(input);
+
+    expect(result.status).toBe(0);
+    expect(result.stderr).toBe('');
+    expect(result.stdout).toBe(expected);
+  });
+
   it('writes no YAML and returns a static diagnostic for invalid input', () => {
     const result = formatWithCommand('name: [unterminated\n');
 
