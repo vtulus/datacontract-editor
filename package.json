@@ -6,13 +6,18 @@
     "type": "git",
     "url": "https://github.com/datacontract/datacontract-editor"
   },
+  "datacontractEditorFormatter": {
+    "upstreamBaseVersion": "0.1.17",
+    "upstreamBaseCommit": "7010fbe2c6d9f6d9ca1bc840dc5ecef6d28b0f50"
+  },
   "type": "module",
   "bin": {
     "datacontract-editor": "./bin/datacontract-editor.js"
   },
   "files": [
     "dist",
-    "bin"
+    "bin",
+    "src/utils/yaml.js"
   ],
   "scripts": {
     "dev": "vite",

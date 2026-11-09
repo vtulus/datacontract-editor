@@ -5,7 +5,20 @@ import { readFileSync, writeFileSync, existsSync, readdirSync } from 'fs';
 import { join, extname, resolve, basename } from 'path';
 import { fileURLToPath } from 'url';
 import { createRequire } from 'module';
-import { parse as parseYaml } from 'yaml';
+import process from 'node:process';
+import { parseYaml, stringifyYaml } from '../src/utils/yaml.js';
+
+// This intentionally uses the formatter that structured editor changes use.
+// Keep this before all server setup so `format` is non-interactive.
+if (process.argv[2] === 'format') {
+  try {
+    writeFileSync(1, stringifyYaml(parseYaml(readFileSync(0, 'utf-8'))));
+    process.exit(0);
+  } catch {
+    process.stderr.write('Error: unable to format YAML\n');
+    process.exit(1);
+  }
+}
 
 const __dirname = fileURLToPath(new URL('.', import.meta.url));
 const distDir = join(__dirname, '..', 'dist');
