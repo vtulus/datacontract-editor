@@ -9,10 +9,13 @@ import process from 'node:process';
 import { parseYaml, stringifyYaml } from '../src/utils/yaml.js';
 
 // This intentionally uses the formatter that structured editor changes use.
-// Keep this before all server setup so `format` is non-interactive.
-if (process.argv[2] === 'format') {
+// Keep this before all server setup so `format-yaml` is non-interactive.
+if (process.argv[2] === 'format-yaml') {
   try {
-    writeFileSync(1, stringifyYaml(parseYaml(readFileSync(0, 'utf-8'))));
+    if (process.argv.length !== 3) throw new Error('Unexpected formatter arguments');
+    const input = readFileSync(0, 'utf-8');
+    if (input.length === 0) throw new Error('Empty formatter input');
+    writeFileSync(1, stringifyYaml(parseYaml(input)));
     process.exit(0);
   } catch {
     process.stderr.write('Error: unable to format YAML\n');
@@ -46,12 +49,16 @@ function parseArgs() {
   datacontract-editor v${pkg.version}
 
   Usage: datacontract-editor [options] [file]
+         datacontract-editor format-yaml
 
   Options:
     -p, --port <port>            Port to run the server on (default: auto-detect from 9090)
     -c, --customization <path>   Customization file (default: $CUSTOMIZATION_CONFIG,
                                  then ./customization.yaml if present)
     -h, --help                   Show this help message
+
+  Commands:
+    format-yaml                  Format one YAML document from standard input
 
   Examples:
     datacontract-editor                    # Start editor without a file
