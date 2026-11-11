@@ -7,8 +7,8 @@
     "url": "https://github.com/datacontract/datacontract-editor"
   },
   "datacontractEditorFormatter": {
-    "upstreamBaseVersion": "0.1.17",
-    "upstreamBaseCommit": "7010fbe2c6d9f6d9ca1bc840dc5ecef6d28b0f50"
+    "upstreamBaseVersion": "0.1.18",
+    "upstreamBaseCommit": "64c6fbd0062b16912e8d7fa9e375e12e3cd9eb8c"
   },
   "type": "module",
   "bin": {
@@ -67,6 +67,7 @@
     "zustand": "^5.0.8"
   },
   "overrides": {
+    "dompurify": ">=3.4.17",
     "monaco-editor": {
       "dompurify": "^3.4.12"
     }
